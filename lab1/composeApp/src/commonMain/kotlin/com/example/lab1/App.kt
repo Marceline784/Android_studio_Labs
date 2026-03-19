@@ -13,17 +13,23 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.painterResource
 
 import lab1.composeapp.generated.resources.Res
 import lab1.composeapp.generated.resources.compose_multiplatform
 
+import co.touchlab.kermit.Logger
+import com.example.lab1.ui.theme.AppTheme
+
 @Composable
 @Preview
 fun App() {
-    MaterialTheme {
+    AppTheme {
         var showContent by remember { mutableStateOf(false) }
+
         Column(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.primaryContainer)
@@ -31,17 +37,29 @@ fun App() {
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Button(onClick = { showContent = !showContent }) {
-                Text("Click me!")
+            Button(onClick = {
+                showContent = !showContent
+                Logger.i { "Logger test." }
+            }) {
+                Text(if (showContent) "Сховати" else "Click me!")
             }
+
             AnimatedVisibility(showContent) {
-                val greeting = remember { Greeting().greet() }
+                val currentTime = remember { TimeZoneHelperImpl().currentTime() }
+
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Image(painterResource(Res.drawable.compose_multiplatform), null)
-                    Text("Compose: $greeting")
+
+                    Text(
+                        text = "Current time: $currentTime",
+                        style = TextStyle(
+                            fontSize = 28.sp,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    )
                 }
             }
         }
