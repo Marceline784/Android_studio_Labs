@@ -37,6 +37,7 @@ kotlin {
             // Бібліотеки для спільного коду
             implementation(libs.kermit)
             implementation(libs.datetime)
+            implementation(libs.navigation.compose)
         }
 
         commonTest.dependencies {
