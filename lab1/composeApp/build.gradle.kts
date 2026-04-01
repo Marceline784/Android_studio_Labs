@@ -15,42 +15,37 @@ kotlin {
         }
     }
 
-    jvm() // Підтримка Desktop версії
+    jvm() // Desktop підтримка
 
     sourceSets {
-        androidMain.dependencies {
-            implementation(libs.compose.uiToolingPreview)
-            implementation(libs.androidx.activity.compose)
+        commonMain.dependencies {
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.material3)
+            implementation(compose.ui)
+            implementation(compose.components.resources)
+            implementation(compose.components.uiToolingPreview)
+
+            implementation(libs.androidx.lifecycle.viewmodelCompose)
+            implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(libs.navigation.compose)
+            implementation(libs.material.icons.core)
             implementation(libs.kermit)
             implementation(libs.datetime)
         }
 
-        commonMain.dependencies {
-            implementation(libs.compose.runtime)
-            implementation(libs.compose.foundation)
-            implementation(libs.compose.material3.expressive)
-            implementation(libs.compose.ui)
-            implementation(libs.compose.components.resources)
+        androidMain.dependencies {
+            implementation(libs.androidx.activity.compose)
             implementation(libs.compose.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
-            implementation(libs.androidx.lifecycle.runtimeCompose)
-            // Бібліотеки для спільного коду
-            implementation(libs.kermit)
-            implementation(libs.datetime)
-            implementation(libs.navigation.compose)
         }
 
         commonTest.dependencies {
             implementation(libs.kotlin.test)
-            implementation(libs.kermit)
-            implementation(libs.datetime)
         }
 
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
-            implementation(libs.kermit)
-            implementation(libs.datetime)
         }
     }
 }
@@ -66,19 +61,11 @@ android {
         versionCode = 1
         versionName = "1.0"
     }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-}
-
-dependencies {
-    debugImplementation(libs.compose.uiTooling)
 }
 
 compose.desktop {

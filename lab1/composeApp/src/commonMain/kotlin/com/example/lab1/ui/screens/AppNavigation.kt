@@ -2,38 +2,39 @@ package com.example.lab1.ui.screens
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.*
+import kotlinx.coroutines.launch
 import lab1.composeapp.generated.resources.*
-import org.jetbrains.compose.resources.StringResource
 import com.example.lab1.ui.screens.main.MainScreen
 import com.example.lab1.ui.screens.buttons.ButtonsScreen
 import com.example.lab1.ui.screens.checkboxes.CheckboxesScreen
+import com.example.lab1.ui.screens.chips.ChipsScreen
+import com.example.lab1.ui.screens.datepicker.DatePickerScreen
+import com.example.lab1.ui.screens.dialogs.DialogScreen
+import com.example.lab1.ui.screens.divider.DividerScreen
+import com.example.lab1.ui.screens.progress.ProgressScreen
+import com.example.lab1.ui.screens.radio.RadioScreen
+import com.example.lab1.ui.screens.switches.SwitchScreen
+import com.example.lab1.ui.screens.timepicker.TimePickerScreen
 
-// 1. Перелік екранів з посиланням на твої String Resources
-enum class AppScreen(val title: StringResource) {
-    Main(Res.string.main),
-    Buttons(Res.string.buttons),
-    Checkboxes(Res.string.checkboxes)
+enum class AppScreen {
+    Main, Buttons, Checkboxes, Chips, DatePicker, Dialogs, Dividers, Progress, Radio, Switches, TimePicker
 }
 
 @Composable
 fun AppNavigation() {
-    // 2. Створюємо контролер навігації
-    val navController: NavHostController = rememberNavController()
+    val navController = rememberNavController()
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    // Отримуємо інформацію про поточний екран (для заголовків, якщо знадобиться)
-    val backStackEntry by navController.currentBackStackEntryAsState()
-
-    Scaffold { innerPadding ->
-        // 3. Описуємо маршрути між екранами
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { innerPadding ->
+        // ДОДАЄМО .padding(innerPadding), щоб контент не перекривався
         NavHost(
             navController = navController,
             startDestination = AppScreen.Main.name,
@@ -41,34 +42,64 @@ fun AppNavigation() {
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            // Головний екран
             composable(route = AppScreen.Main.name) {
                 MainScreen(
-                    onNavigateToButtons = {
-                        navController.navigate(AppScreen.Buttons.name)
-                    },
-                    onNavigateToCheckboxes = {
-                        navController.navigate(AppScreen.Checkboxes.name)
-                    }
+                    onButtonsClicked = { navController.navigate(AppScreen.Buttons.name) },
+                    onCheckboxesClicked = { navController.navigate(AppScreen.Checkboxes.name) },
+                    onChipsClicked = { navController.navigate(AppScreen.Chips.name) },
+                    onDatePickerClicked = { navController.navigate(AppScreen.DatePicker.name) },
+                    onDialogsClicked = { navController.navigate(AppScreen.Dialogs.name) },
+                    onDividersClicked = { navController.navigate(AppScreen.Dividers.name) },
+                    onProgressClicked = { navController.navigate(AppScreen.Progress.name) },
+                    onRadioClicked = { navController.navigate(AppScreen.Radio.name) },
+                    onSwitchesClicked = { navController.navigate(AppScreen.Switches.name) },
+                    onTimePickerClicked = { navController.navigate(AppScreen.TimePicker.name) }
                 )
             }
 
-            // Екран з кнопками
             composable(route = AppScreen.Buttons.name) {
                 ButtonsScreen(
-                    onBack = {
-                        navController.popBackStack()
+                    onBack = { navController.popBackStack() },
+                    onShowMessage = { text ->
+                        scope.launch { snackbarHostState.showSnackbar(message = text) }
                     }
                 )
             }
 
-            // Екран з чекбоксами
             composable(route = AppScreen.Checkboxes.name) {
-                CheckboxesScreen(
-                    onBack = {
-                        navController.popBackStack()
-                    }
-                )
+                CheckboxesScreen(onBack = { navController.popBackStack() })
+            }
+
+            composable(route = AppScreen.Chips.name) {
+                ChipsScreen(onBack = { navController.popBackStack() })
+            }
+
+            composable(route = AppScreen.DatePicker.name) {
+                DatePickerScreen(onBack = { navController.popBackStack() })
+            }
+
+            composable(route = AppScreen.Dialogs.name) {
+                DialogScreen(onBack = { navController.popBackStack() })
+            }
+
+            composable(route = AppScreen.Dividers.name) {
+                DividerScreen(onBack = { navController.popBackStack() })
+            }
+
+            composable(route = AppScreen.Progress.name) {
+                ProgressScreen(onBack = { navController.popBackStack() })
+            }
+
+            composable(route = AppScreen.Radio.name) {
+                RadioScreen(onBack = { navController.popBackStack() })
+            }
+
+            composable(route = AppScreen.Switches.name) {
+                SwitchScreen(onBack = { navController.popBackStack() })
+            }
+
+            composable(route = AppScreen.TimePicker.name) {
+                TimePickerScreen(onBack = { navController.popBackStack() })
             }
         }
     }
