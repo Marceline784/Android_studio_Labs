@@ -21,7 +21,7 @@ import com.example.lab1.ui.screens.switches.SwitchScreen
 import com.example.lab1.ui.screens.timepicker.TimePickerScreen
 
 enum class AppScreen {
-    Main, Buttons, Checkboxes, Chips, DatePicker, Dialogs, Dividers, Progress, Radio, Switches, TimePicker
+    Main, Buttons, Checkboxes, Chips, DatePicker, Dialogs, Dividers, Progress, Radio, Switches, TimePicker, Lab4
 }
 
 @Composable
@@ -53,7 +53,8 @@ fun AppNavigation() {
                     onProgressClicked = { navController.navigate(AppScreen.Progress.name) },
                     onRadioClicked = { navController.navigate(AppScreen.Radio.name) },
                     onSwitchesClicked = { navController.navigate(AppScreen.Switches.name) },
-                    onTimePickerClicked = { navController.navigate(AppScreen.TimePicker.name) }
+                    onTimePickerClicked = { navController.navigate(AppScreen.TimePicker.name) },
+                    onLab4Clicked = { navController.navigate(AppScreen.Lab4.name) }
                 )
             }
 
@@ -100,6 +101,11 @@ fun AppNavigation() {
 
             composable(route = AppScreen.TimePicker.name) {
                 TimePickerScreen(onBack = { navController.popBackStack() })
+            }
+            composable(route = AppScreen.Lab4.name) {
+                com.example.lab1.ui.screens.lab4.Lab4MainScreen(
+                    onBack = { navController.popBackStack() }
+                )
             }
         }
     }

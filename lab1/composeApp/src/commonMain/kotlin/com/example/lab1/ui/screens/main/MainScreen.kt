@@ -24,7 +24,8 @@ fun MainScreen(
     onProgressClicked: () -> Unit,
     onRadioClicked: () -> Unit,
     onSwitchesClicked: () -> Unit,
-    onTimePickerClicked: () -> Unit
+    onTimePickerClicked: () -> Unit,
+    onLab4Clicked: () -> Unit
 ) {
     var showContent by remember { mutableStateOf(false) }
 
@@ -123,6 +124,12 @@ fun MainScreen(
             onClick = onTimePickerClicked
         ) {
             Text("Time Picker")
+        }
+        Button(
+            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+            onClick = onLab4Clicked
+        ) {
+            Text("Лабораторна №4 (Time Zones)")
         }
     }
 }
