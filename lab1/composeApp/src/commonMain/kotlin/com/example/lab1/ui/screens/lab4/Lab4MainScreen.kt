@@ -3,7 +3,10 @@
 package com.example.lab1.ui.screens.lab4
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -17,7 +20,6 @@ import com.example.lab1.TimeZoneHelperImpl
 
 @Composable
 fun Lab4MainScreen(onBack: () -> Unit) {
-    // Використовуємо IntState для усунення попереджень
     var selectedTab by remember { mutableIntStateOf(0) }
     val selectedTimeZones = remember { mutableStateListOf<String>() }
     val showDialog = remember { mutableStateOf(false) }
@@ -76,7 +78,6 @@ fun Lab4MainScreen(onBack: () -> Unit) {
 @Composable
 fun HourSelector(label: String, hour: Int, onHourChange: (Int) -> Unit) {
     Row(
-        // ВИПРАВЛЕНО: Alignment.CenterVertically для Row
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth().padding(8.dp)
     ) {
@@ -102,6 +103,9 @@ fun MeetingFinderPage(selectedTimeZones: List<String>) {
     val startHour = remember { mutableIntStateOf(9) }
     val endHour = remember { mutableIntStateOf(17) }
 
+    // Стан для обраних ЧЕКБОКСАМИ поясів
+    val zonesToCompare = remember { mutableStateListOf<String>() }
+
     val showResultDialog = remember { mutableStateOf(false) }
     val meetingResults = remember { mutableStateOf<List<Int>>(emptyList()) }
 
@@ -113,7 +117,6 @@ fun MeetingFinderPage(selectedTimeZones: List<String>) {
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
-                // ВИПРАВЛЕНО: передача значень через .intValue
                 HourSelector("Початок:", startHour.intValue) { startHour.intValue = it }
                 HourSelector("Кінець:", endHour.intValue) { endHour.intValue = it }
             }
@@ -121,13 +124,59 @@ fun MeetingFinderPage(selectedTimeZones: List<String>) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        Text("Оберіть зони для врахування:", style = MaterialTheme.typography.titleSmall)
+
+        // Список з вибором зон
+        Card(
+            modifier = Modifier.fillMaxWidth().weight(1f).padding(vertical = 8.dp),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+        ) {
+            if (selectedTimeZones.isEmpty()) {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("Список порожній", style = MaterialTheme.typography.bodyMedium)
+                }
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxSize().padding(8.dp)) {
+                    items(selectedTimeZones) { zone ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    if (zonesToCompare.contains(zone)) zonesToCompare.remove(zone)
+                                    else zonesToCompare.add(zone)
+                                }
+                                .padding(4.dp)
+                        ) {
+                            Checkbox(
+                                checked = zonesToCompare.contains(zone),
+                                onCheckedChange = { checked ->
+                                    if (checked == true) zonesToCompare.add(zone)
+                                    else zonesToCompare.remove(zone)
+                                }
+                            )
+                            Text(zone, style = MaterialTheme.typography.bodyLarge)
+                        }
+                    }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         Button(
             onClick = {
-                meetingResults.value = timezoneHelper.search(startHour.intValue, endHour.intValue, selectedTimeZones)
+                // Викликаємо пошук тільки для тих зон, де стоїть галочка
+                meetingResults.value = timezoneHelper.search(
+                    startHour.intValue,
+                    endHour.intValue,
+                    zonesToCompare.toList()
+                )
                 showResultDialog.value = true
             },
             modifier = Modifier.fillMaxWidth(),
-            enabled = selectedTimeZones.isNotEmpty()
+            // Кнопка активна, тільки якщо вибрано хоча б одну зону галочкою
+            enabled = zonesToCompare.isNotEmpty()
         ) {
             Text("Знайти підходящий час")
         }

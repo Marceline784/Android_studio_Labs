@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,13 +17,14 @@ import com.example.lab1.TimeZoneHelperImpl
 import kotlinx.coroutines.delay
 
 @Composable
-fun TimeZonePage(selectedTimeZones: List<String>) {
+fun TimeZonePage(selectedTimeZones: MutableList<String>) {
     val timezoneHelper = remember { TimeZoneHelperImpl() }
+    // Стан для примусового рекомпозиції кожну хвилину
     var tick by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(Unit) {
         while (true) {
-            delay(60000)
+            delay(60000) // Оновлення раз на хвилину
             tick++
         }
     }
@@ -31,6 +34,7 @@ fun TimeZonePage(selectedTimeZones: List<String>) {
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        // Картка місцевого часу
         item {
             LocalTimeCard(
                 city = timezoneHelper.currentTimeZone(),
@@ -38,16 +42,38 @@ fun TimeZonePage(selectedTimeZones: List<String>) {
                 date = timezoneHelper.getDate(timezoneHelper.currentTimeZone())
             )
         }
-        item {
-            Text("Вибрані зони", style = MaterialTheme.typography.titleMedium)
-        }
-        items(selectedTimeZones) { zone ->
-            TimeCard(
-                timezone = zone,
-                hours = timezoneHelper.hoursFromTimeZone(zone),
-                time = timezoneHelper.getTime(zone),
-                date = timezoneHelper.getDate(zone)
-            )
+
+        if (selectedTimeZones.isNotEmpty()) {
+            item {
+                Text(
+                    text = "Вибрані зони",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+
+            items(selectedTimeZones) { zone ->
+                TimeCard(
+                    timezone = zone,
+                    hours = timezoneHelper.hoursFromTimeZone(zone),
+                    time = timezoneHelper.getTime(zone),
+                    date = timezoneHelper.getDate(zone),
+                    onDelete = { selectedTimeZones.remove(zone) } // Додано видалення
+                )
+            }
+        } else {
+            item {
+                Box(
+                    modifier = Modifier.fillMaxWidth().padding(32.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        "Список порожній. Натисніть + щоб додати місто.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.outline
+                    )
+                }
+            }
         }
     }
 }
@@ -77,7 +103,7 @@ fun LocalTimeCard(city: String, time: String, date: String) {
 }
 
 @Composable
-fun TimeCard(timezone: String, hours: Double, time: String, date: String) {
+fun TimeCard(timezone: String, hours: Double, time: String, date: String, onDelete: () -> Unit) {
     Card(
         shape = RoundedCornerShape(12.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
@@ -88,14 +114,28 @@ fun TimeCard(timezone: String, hours: Double, time: String, date: String) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(timezone, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                // Виправлено: перетворення Double в String
-                Text("${if (hours >= 0) "+" else ""}${hours.toInt()} год від місцевого", style = MaterialTheme.typography.bodySmall)
+                val diff = hours.toInt()
+                Text(
+                    text = "${if (diff >= 0) "+" else ""}$diff год від місцевого",
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
-            Column(horizontalAlignment = Alignment.End) {
-                Text(time, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-                Text(date, style = MaterialTheme.typography.labelSmall)
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Column(horizontalAlignment = Alignment.End, modifier = Modifier.padding(end = 8.dp)) {
+                    Text(time, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+                    Text(date, style = MaterialTheme.typography.labelSmall)
+                }
+                // Кнопка видалення (зручно для менеджменту списку)
+                IconButton(onClick = onDelete) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Видалити",
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                }
             }
         }
     }

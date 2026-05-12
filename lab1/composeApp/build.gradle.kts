@@ -15,7 +15,14 @@ kotlin {
         }
     }
 
-    jvm() // Desktop підтримка
+    // ВИПРАВЛЕНО: Додаємо JVM без вказання імені "desktop", щоб папка jvmMain стала синьою
+    jvm()
+
+    @OptIn(org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl::class)
+    wasmJs {
+        browser()
+        binaries.executable()
+    }
 
     sourceSets {
         commonMain.dependencies {
@@ -25,13 +32,10 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
-
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
-            implementation(libs.androidx.lifecycle.runtimeCompose)
-            implementation(libs.navigation.compose)
-            implementation(libs.material.icons.core)
+            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
+            implementation("org.jetbrains.androidx.navigation:navigation-compose:2.8.0-alpha10")
             implementation(libs.kermit)
-            implementation(libs.datetime)
+            implementation(kotlin("test"))
         }
 
         androidMain.dependencies {
@@ -39,13 +43,21 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
         }
 
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
+        // ВИПРАВЛЕНО: Налаштування для Web (Пункт 3 завдання)
+        val wasmJsMain by getting {
+            dependencies {
+                implementation(npm("@js-joda/timezone", "2.25.1"))
+            }
         }
 
-        jvmMain.dependencies {
-            implementation(compose.desktop.currentOs)
-            implementation(libs.kotlinx.coroutinesSwing)
+        // ВИПРАВЛЕНО: Тепер Gradle точно знає про jvmMain
+        val jvmMain by getting {
+            dependencies {
+                implementation(compose.desktop.currentOs)
+                implementation(compose.material3)
+                // Додаємо корутини для Swing (Desktop)
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.8.0")
+            }
         }
     }
 }
@@ -53,7 +65,6 @@ kotlin {
 android {
     namespace = "com.example.lab1"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
-
     defaultConfig {
         applicationId = "com.example.lab1"
         minSdk = libs.versions.android.minSdk.get().toInt()
@@ -61,7 +72,6 @@ android {
         versionCode = 1
         versionName = "1.0"
     }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -72,8 +82,8 @@ compose.desktop {
     application {
         mainClass = "com.example.lab1.MainKt"
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.example.lab1"
+            targetFormats(TargetFormat.Msi, TargetFormat.Exe, TargetFormat.Dmg)
+            packageName = "CrossPlatformLabs"
             packageVersion = "1.0.0"
         }
     }
