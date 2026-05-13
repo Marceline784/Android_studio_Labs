@@ -1,4 +1,4 @@
-package com.example.lab1.ui.theme
+package com.example.lab6.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -6,7 +6,6 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 
-// Світла схема
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
     onPrimary = onPrimaryLight,
@@ -38,7 +37,6 @@ private val lightScheme = lightColorScheme(
     inversePrimary = inversePrimaryLight,
 )
 
-// Темна схема
 private val darkScheme = darkColorScheme(
     primary = primaryDark,
     onPrimary = onPrimaryDark,
@@ -71,7 +69,7 @@ private val darkScheme = darkColorScheme(
 )
 
 @Composable
-fun AppTheme(
+fun MyCustomTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
@@ -79,7 +77,7 @@ fun AppTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = getAppTypography(), // Викликаємо функцію з Type.kt
+        typography = getAppTypography(),
         content = content
     )
 }

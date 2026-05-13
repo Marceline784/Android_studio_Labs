@@ -1,15 +1,10 @@
 package com.example.lab1
 
 import co.touchlab.kermit.Logger
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toInstant
-import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.* // ВИПРАВЛЕНО: Імпортуємо все з kotlinx.datetime
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.time.Clock
-import kotlin.time.Instant
 
 class TimeZoneHelperImpl : TimeZoneHelper {
 
@@ -18,6 +13,7 @@ class TimeZoneHelperImpl : TimeZoneHelper {
     }
 
     override fun currentTime(): String {
+        // ВИПРАВЛЕНО: Використовуємо Clock з kotlinx.datetime
         val currentMoment: Instant = Clock.System.now()
         val dateTime: LocalDateTime = currentMoment
             .toLocalDateTime(TimeZone.currentSystemDefault())
@@ -117,10 +113,12 @@ class TimeZoneHelperImpl : TimeZoneHelper {
         }
         val currentUTCInstant: Instant = Clock.System.now()
         val currentOtherDateTime: LocalDateTime = currentUTCInstant.toLocalDateTime(otherTimeZone)
+
+        // ВИПРАВЛЕНО: .day замінено на .dayOfMonth
         val otherDateTimeWithHour = LocalDateTime(
             currentOtherDateTime.year,
             currentOtherDateTime.month,
-            currentOtherDateTime.day,
+            currentOtherDateTime.dayOfMonth,
             hour,
             0,
             0,
