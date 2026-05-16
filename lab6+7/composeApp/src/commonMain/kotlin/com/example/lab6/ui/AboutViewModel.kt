@@ -9,25 +9,19 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class AboutViewModel(
-    private val repository: AboutRepository
+    private val repository: AboutRepository = AboutRepository()
 ) : ViewModel() {
 
-    private val _state =
-        MutableStateFlow<List<Pair<String, String>>>(emptyList())
-
-    val state: StateFlow<List<Pair<String, String>>> =
-        _state.asStateFlow()
+    private val _state = MutableStateFlow<List<Pair<String, String>>>(emptyList())
+    val state: StateFlow<List<Pair<String, String>>> = _state.asStateFlow()
 
     init {
         loadSystemInfo()
     }
 
     private fun loadSystemInfo() {
-
         viewModelScope.launch {
-
-            _state.value =
-                repository.getSystemInfo()
+            _state.value = repository.getSystemInfo()
         }
     }
 }
