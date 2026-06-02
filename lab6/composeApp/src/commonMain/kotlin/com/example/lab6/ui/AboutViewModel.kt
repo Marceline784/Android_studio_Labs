@@ -11,9 +11,7 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.format
 import kotlinx.datetime.format.char
 
-class AboutViewModel(
-    private val repository: AboutRepository
-) : ViewModel() {
+class AboutViewModel(private val repository: AboutRepository) : ViewModel() {
 
     private val format = LocalDateTime.Format {
         dayOfMonth()
@@ -31,23 +29,19 @@ class AboutViewModel(
     val state = _state.asStateFlow()
 
     init {
+        load()
         repository.increaseVisitCount()
         repository.updateVisitedDate()
-        load()
     }
 
     private fun load() {
         viewModelScope.launch {
-
-            val info = repository.getSystemInfo()
-            val count = repository.getVisitCount()
-            val date = repository.getVisitedDate()?.format(format) ?: "-----"
-
+            val lastDate = repository.getVisitedDate()
             _state.update {
                 it.copy(
-                    platformInfo = info,
-                    visitedCount = count,
-                    visitedDate = date
+                    platformInfo = repository.getSystemInfo(),
+                    visitedCount = repository.getVisitCount(),
+                    visitedDate = lastDate?.format(format) ?: "First visit"
                 )
             }
         }

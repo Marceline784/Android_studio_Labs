@@ -7,12 +7,15 @@ import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 
 class MainActivity : ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
 
-        Napier.base(DebugAntilog())
+
+        try {
+            Napier.base(DebugAntilog())
+        } catch (e: Exception) {
+
+        }
 
         setContent {
             App()
