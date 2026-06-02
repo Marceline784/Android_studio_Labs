@@ -10,8 +10,12 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Ініціалізація логера для Android
-        Napier.base(DebugAntilog())
+
+        try {
+            Napier.base(DebugAntilog())
+        } catch (e: Exception) {
+
+        }
 
         setContent {
             App()
