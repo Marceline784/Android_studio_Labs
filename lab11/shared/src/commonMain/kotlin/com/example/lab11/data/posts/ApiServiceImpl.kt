@@ -1,0 +1,65 @@
+package com.example.lab11.data.posts
+
+import com.example.lab11.data.common.NetworkResult
+import com.example.lab11.data.common.safeRequest
+import com.example.lab11.data.posts.model.requests.NewPost
+import com.example.lab11.data.posts.model.responses.DeletedPost
+import com.example.lab11.data.posts.model.responses.Post
+import com.example.lab11.data.posts.model.responses.Posts
+import io.ktor.client.HttpClient
+import io.ktor.client.request.accept
+import io.ktor.client.request.delete
+import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.request.put
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
+
+class ApiServiceImpl(
+    private val client: HttpClient
+) : ApiService {
+
+    override suspend fun getAllPosts(): NetworkResult<Posts> {
+        return client.safeRequest {
+            get("$BASE_URL$POSTS_API") {
+                accept(ContentType.Application.Json)
+            }
+        }
+    }
+
+    override suspend fun addPost(
+        post: NewPost
+    ): NetworkResult<Post> {
+
+        return client.safeRequest {
+            post("$BASE_URL$POSTS_API/$ADD_POST") {
+                contentType(ContentType.Application.Json)
+                setBody(post)
+            }
+        }
+    }
+
+    override suspend fun updatePost(
+        post: Post
+    ): NetworkResult<Post> {
+
+        return client.safeRequest {
+            put("$BASE_URL$POSTS_API/${post.id}") {
+                contentType(ContentType.Application.Json)
+                setBody(post)
+            }
+        }
+    }
+
+    override suspend fun deletePost(
+        postId: Int
+    ): NetworkResult<DeletedPost> {
+
+        return client.safeRequest {
+            delete("$BASE_URL$POSTS_API/$postId") {
+                accept(ContentType.Application.Json)
+            }
+        }
+    }
+}

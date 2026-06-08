@@ -64,6 +64,10 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
             implementation(libs.sqldelight.jvm)
+            implementation(libs.kotlinx.datetime)
+
+            // ДОДАЙТЕ ЦЕЙ РЯДОК:
+            implementation("io.insert-koin:koin-core:4.2.1")
         }
     }
 }
